@@ -1,9 +1,3 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- * @flow
- */
-
 import React, { Component } from 'react';
 import {
 	  AppRegistry,
@@ -25,10 +19,10 @@ class CameraView extends Component {
 	          ref={(cam) => {
 	            this.camera = cam;
 	          }}
-	          style={styles.preview}
+	          style={styles.camera}
 	          aspect={Camera.constants.Aspect.fill}>
-	          <Text style={styles.capture} onPress={this.takePicture.bind(this)}>CAPTURE</Text>
 	        </Camera>
+	        <Text style={styles.button} onPress={this.takePicture.bind(this)}>CAPTURE</Text>
 	      </View>
 	    );
 	}
@@ -54,7 +48,6 @@ class CameraView extends Component {
 			})
 			.then(result => {return result.json()})
 			.then(json => {
-//			console.log('>> json length: ' + json.length);
 			
 			var wheight = Dimensions.get('window').height;
 		    var wwidth = Dimensions.get('window').width;
@@ -73,11 +66,6 @@ class CameraView extends Component {
 						id: i});
 				}
 			}
-//				frames = [
-//					{top: 0, left: 0, w: 150, h: 300, color: 'red', id: 0}, 
-//					{top: 0, left: 0, w: 100, h: 250, color: 'green', id: 1},
-//					{top: 0, left: 0, w: 200, h: 100, color: 'blue', id: 2}
-//					]
 			var product = {
 					path: path,
 					frames: frames
@@ -129,16 +117,18 @@ class Frames extends Component {
 class ProductComponent extends Component {
 	render() {
 	    return (
-	      <Image 
-	      	source={{uri: this.props.product.path}}
-	      	style={styles.preview}>
-	      		<View style={styles.preview}>
-	      			<Frames frames={this.props.product.frames}></Frames>	
-	      		</View>
-	      		<View style={styles.preview}>
-	      			<Text style={styles.capture} onPress={this.resetProduct.bind(this)}>BACK</Text>
-	      		</View>
-	      </Image>
+	      <View style={styles.backdrop}>  
+		    <Image 
+		      	source={{uri: this.props.product.path}}
+		      	style={styles.image}>
+		      		<View style={styles.container}>
+		      			<Frames frames={this.props.product.frames}></Frames>	
+		      		</View>
+		      		<View style={styles.container}>
+		      			<Text style={styles.button} onPress={this.resetProduct.bind(this)}>BACK</Text>
+		      		</View>
+		      </Image>
+	      </View>
 	    )
 	 }
 	
@@ -151,19 +141,14 @@ class ProductDetector extends Component {
 	  constructor(props) {
 	    super(props);
 	    this.state = {product: undefined};
-//	    this.state = {
-//	    		product: {
-//	    			path: 'file:///storage/emulated/0/DCIM/IMG_20161206_120957.jpg'
-//	    		},
-//				frames: [
-//					{x: 50, y: 50, w: 50, h: 25}, 
-//					{x: 100, y: 100, w: 25, h: 25}]
-//	    }
+//	    this.state = {product: {
+//	    	path: 'file:///storage/emulated/0/DCIM/IMG_20161207_232552.jpg',
+//	    	frames: []
+//	    }};
 	  }
 	
 	  render() {
 		  var product = this.state.product;
-//		  console.log('>> product: ' + JSON.stringify(product));
 		  if (!product) 
 			  return React.createElement(CameraView, {setProduct: this.setProduct.bind(this)});
 		  else return React.createElement(ProductComponent, {product: product, setProduct: this.setProduct.bind(this)});
@@ -176,17 +161,25 @@ class ProductDetector extends Component {
 
 const styles = StyleSheet.create({
 	  container: {
-	    flex: 1
+	    flex: 1,
+	    justifyContent:'flex-end'
 	  },
-	  preview: {
-		justifyContent:'flex-end',
+	  backdrop: {
+		 flex: 1,
+		 backgroundColor: '#000000',
+	  },
+	  image: {
+	  	flex:1,
+	    resizeMode: 'contain'
+	  },
+	  camera: {
 		position: 'absolute',
 	    top: 0,
 	    left: 0,
 	    height: Dimensions.get('window').height,
 	    width: Dimensions.get('window').width
 	  },
-	  capture: {
+	  button: {
 	    flex: 0,
 	    backgroundColor: '#fff',
 	    borderRadius: 5,
