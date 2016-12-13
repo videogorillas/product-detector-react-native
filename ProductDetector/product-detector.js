@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import {
 	  AppRegistry,
+	  Alert,
 	  Dimensions,
 	  StyleSheet,
 	  Text,
@@ -81,17 +82,14 @@ class ProductComponent extends Component {
 	constructor(props) {
 	    super(props);
 	    this.state = {
-	    	coordinates: {left: 0, top: 0, width: 0, height: 0},
-	    	orientation: 'portrait',
-	    	direction: 'column'
+	    	coordinates: {left: 0, top: 0, width: 0, height: 0}
 	    };
 	}
 
 	render() {
 	    return (
 	      <View style={{flex: 1, backgroundColor: '#000000', justifyContent: 'space-between', 
-	    	  flexDirection: this.state.direction}}
-	      	  onLayout={this.setOrientation.bind(this)}>
+	    	  flexDirection: 'column'}}>
 
 	      	  <Image 
 		      	source={{uri: this.props.photo}}
@@ -107,13 +105,6 @@ class ProductComponent extends Component {
 	    )
 	 }
 	
-	 setOrientation(event) {
-		 var {x, y, width, height} = event.nativeEvent.layout;
-		 this.setState({orientation: ((width > height) ? 'landscape' : 'portrait')});
-		 this.setState({direction: ((width > height) ? 'row' : 'column')});
-		 console.log('>> orientation: ' + this.state.orientation);
-	 }
-
 	 setCoordinates(event) {
 		var {x, y, width, height} = event.nativeEvent.layout;
    	  	this.setState({coordinates: {left: x, top: y, width: width, height: height}});
@@ -172,8 +163,8 @@ class ProductDetector extends Component {
 			  var frames = this.jsonToFrames(json);
 			  this.setFrames(frames);
 	      }).catch(err => {
-	    	
-			console.error(err);
+	    	Alert.alert('Upload', '' + err);
+			console.log(err);
 		});
 	  }
 	  
