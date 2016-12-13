@@ -157,13 +157,15 @@ class ProductDetector extends Component {
 	  setPhoto(photo) {
 		  this.setState({photo: photo});
 		  
-		  this.uploadPicture(photo).then(result => {
+		  var url = 'http://podol.videogorillas.com:4242/upload';
+		  
+		  this.uploadPicture(photo, url).then(result => {
 			  return result.json()
 		  }).then(json => {
 			  var frames = this.jsonToFrames(json);
 			  this.setFrames(frames);
 	      }).catch(err => {
-	    	Alert.alert('Upload', '' + err);
+	    	Alert.alert('Upload', '' + err + '(' + url + ')');
 			console.log(err);
 		});
 	  }
@@ -177,7 +179,7 @@ class ProductDetector extends Component {
 		  this.setState({photo: undefined, frames: []});
 	  }
 	  
-	  uploadPicture(path) {
+	  uploadPicture(path, url) {
 			var file = {
 			    uri: path,
 			    type: 'image/jpeg',
@@ -187,7 +189,7 @@ class ProductDetector extends Component {
 			var body = new FormData();
 			body.append('file', file);
 			
-			return fetch('http://podol.videogorillas.com:4242/upload', {
+			return fetch(url, {
 			  method: 'POST',
 			  headers: {
 			    'Accept': 'application/json',
