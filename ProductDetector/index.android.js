@@ -45,9 +45,7 @@ class FramesComponent extends Component {
 		var {left, top, width, height} = this.props.coordinates;
 		return (
 	      <View 
-	      	style={{borderColor: 'red',
-      			borderStyle: 'solid',
-      			borderWidth: 1,
+	      	style={{
       			position: 'absolute',
       			top: top,
       		    left: left,
@@ -83,32 +81,37 @@ class ProductComponent extends Component {
 	constructor(props) {
 	    super(props);
 	    this.state = {
-	    	coordinates: {left: 0, top: 0, width: 0, height: 0}
+	    	coordinates: {left: 0, top: 0, width: 0, height: 0},
+	    	orientation: 'portrait',
+	    	direction: 'column'
 	    };
 	}
 
 	render() {
 	    return (
-	      <View style={{flex: 1, backgroundColor: '#000000', justifyContent: 'space-between',
-	    	  flexDirection: 'column'}}>
-		      	  <Image 
-			      	source={{uri: this.props.photo}}
-			      	style={{borderColor: 'green',
-			    		borderWidth: 1,
-//			    		position: 'absolute',
-//			    		top: 0,
-//			    	    left: 0,
-			    		flex:1,
-			    	    resizeMode: 'contain',}}
-			      	onLayout={this.setCoordinates.bind(this)}>
-			      	<FramesComponent frames={this.props.frames} coordinates={this.state.coordinates}></FramesComponent>
-			      	
-			      </Image>
+	      <View style={{flex: 1, backgroundColor: '#000000', justifyContent: 'space-between', 
+	    	  flexDirection: this.state.direction}}
+	      	  onLayout={this.setOrientation.bind(this)}>
+
+	      	  <Image 
+		      	source={{uri: this.props.photo}}
+		      	style={{ flex: 1, resizeMode: 'contain'}}
+		      	onLayout={this.setCoordinates.bind(this)}>
+		      	<FramesComponent frames={this.props.frames} coordinates={this.state.coordinates}></FramesComponent>
+		      	
+		      </Image>
 	      	  <TouchableHighlight onPress={this.props.clear}>
 	  			<Image source={require('./ic_close_white_24dp.png')} style={styles.ibutton} />
 	          </TouchableHighlight>
 	      </View>
 	    )
+	 }
+	
+	 setOrientation(event) {
+		 var {x, y, width, height} = event.nativeEvent.layout;
+		 this.setState({orientation: ((width > height) ? 'landscape' : 'portrait')});
+		 this.setState({direction: ((width > height) ? 'row' : 'column')});
+		 console.log('>> orientation: ' + this.state.orientation);
 	 }
 
 	 setCoordinates(event) {
@@ -228,38 +231,12 @@ const styles = StyleSheet.create({
 	    backgroundColor: '#000000',
 	    justifyContent:'flex-end',
 	  },
-	  productComponent: {
-	    flex: 1,
-	    backgroundColor: '#000000',
-//	    alignItems: 'center',
-	  },
-	  productContainer: {
-		  
-	  },
 	  camera: {
 		position: 'absolute',
 	    top: 0,
 	    left: 0,
 	    height: Dimensions.get('window').height,
 	    width: Dimensions.get('window').width
-	  },
-	  imageContainer: {
-		flex:1,
-		borderColor: 'blue',
-		borderStyle: 'dotted',
-		borderWidth: 2,
-	  },
-	  image: {
-	    borderColor: 'green',
-		borderWidth: 1,
-	  
-//		position: 'absolute',
-//		top: 0,
-//	    left: 0,
-		flex:1,
-	    resizeMode: 'contain',
-//	    height: Dimensions.get('window').height,
-//	    width: Dimensions.get('window').width,
 	  },
 	  label: {
 		flex: 0, 
