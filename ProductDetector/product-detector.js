@@ -12,6 +12,7 @@ import {
 
 import Spinner from 'react-native-loading-spinner-overlay';
 import Camera from 'react-native-camera';
+import RandomColor from 'randomcolor';
 
 class CameraComponent extends Component {
 	render() {
@@ -65,7 +66,7 @@ class FramesComponent extends Component {
 	  	            	borderStyle: 'solid',
 	  	      		  	borderWidth: frame.score * 5,
 	  	      		  	borderRadius: 5,
-	  	      		  	borderColor: 'white',
+	  	      		  	borderColor: this.labelToColor(frame.label),
 	  	      		  	alignItems: 'flex-end',
 	  	      		  	justifyContent: 'flex-end'
 	  	      	};
@@ -78,6 +79,11 @@ class FramesComponent extends Component {
 	      </View>
 	    )
 	 }
+  
+     labelToColor(label) {
+       let color = RandomColor.randomColor({seed: label, format: 'rgb'});
+       return color;
+     }
 }
 
 class ProductComponent extends Component {
