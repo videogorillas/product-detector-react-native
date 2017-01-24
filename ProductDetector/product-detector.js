@@ -11,8 +11,17 @@ import {
 	} from 'react-native';
 
 import Camera from 'react-native-camera';
+import Spinner from 'react-native-loading-spinner-overlay';
 
 class CameraComponent extends Component {
+
+  constructor(props) {
+	    super(props);
+	    this.state = {
+	    	capturing: false
+	    };
+	}
+  
 	render() {
 		  return (
 	      <View style={styles.cameraContainer}>
@@ -31,12 +40,20 @@ class CameraComponent extends Component {
 	}
 	
 	takePicture() {
-	    this.camera.capture()
+      if (this.state.capturing)
+          return;
+	  this.setState({capturing: true});
+      this.props.setSpinner(true);
+      this.camera.capture()
 	      .then(data => {
-	    	  console.log('>> picture taken. data: ' + JSON.stringify(data));
-	    	  this.props.setPhoto(data.path);
+              console.log('>> picture taken. data: ' + JSON.stringify(data));
+              this.props.setPhoto(data.path);
+              this.setState({capturing: false});
 	      }).catch(err => {
-			console.error(err);
+              console.error(err);
+              Alert.alert('Capturing ', '' + err);
+              this.setState({capturing: false});
+              this.props.setSpinner(false);
 		});
 	  }
 }
@@ -87,7 +104,7 @@ class ProductComponent extends Component {
 	}
 
 	render() {
-	    return (
+	   let component = 
 	      <View style={{flex: 1, backgroundColor: '#000000', justifyContent: 'space-between', 
 	    	  flexDirection: 'column'}}>
 
@@ -102,7 +119,7 @@ class ProductComponent extends Component {
 	  			<Image source={require('./ic_close_white_24dp.png')} style={styles.ibutton} />
 	          </TouchableHighlight>
 	      </View>
-	    )
+	    return component;
 	 }
 	
 	 setCoordinates(event) {
@@ -114,7 +131,7 @@ class ProductComponent extends Component {
 class ProductDetector extends Component {
 	  constructor(props) {
 	    super(props);
-	    this.state = {photo: undefined, frames: []};
+	    this.state = {photo: undefined, frames: [], spinner: false};
 //	    this.state = {
 //	    	photo: 'file:///storage/emulated/0/DCIM/IMG_20161207_232552.jpg',
 //	    	frames: [
@@ -136,47 +153,51 @@ class ProductDetector extends Component {
 //					score: 0.5,
 //					label: 'product B'
 //				}
-//				]
+//				],
+//	    	spinner: false
 //	    };
 	  }
 	
 	  render() {
-		  var photo = this.state.photo;
-		  if (!photo) 
-			  return React.createElement(CameraComponent, {
-				  setPhoto: this.setPhoto.bind(this),
-				  setFrames: this.setFrames.bind(this)
-			  });
-		  else return React.createElement(ProductComponent, {
-			  	  photo: this.state.photo,
-			  	  frames: this.state.frames,
-			  	  clear: this.clear.bind(this)
-			  });
+		var photo = this.state.photo;
+        let component = null;
+        if (!photo) {
+            component = <CameraComponent setPhoto={this.setPhoto.bind(this)} setSpinner={this.setSpinner.bind(this)}/>;
+        } else {
+            component = <ProductComponent photo={this.state.photo} frames={this.state.frames} clear={this.clear.bind(this)} setSpinner={this.setSpinner.bind(this)} />;
+        }
+        
+        return (
+          <View style={{flex: 1}}>
+            {component}
+            <Spinner visible={this.state.spinner} />
+          </View>
+        )
 	  }
-	  
+  
+      setSpinner(spinner) {
+        this.setState({spinner: spinner});
+      }
+  
 	  setPhoto(photo) {
 		  this.setState({photo: photo});
-		  
 		  var url = 'http://podol.videogorillas.com:4242/upload';
 		  
 		  this.uploadPicture(photo, url).then(result => {
 			  return result.json()
 		  }).then(json => {
 			  var frames = this.jsonToFrames(json);
-			  this.setFrames(frames);
+			  this.setState({frames: frames});
+              this.setSpinner(false);
 	      }).catch(err => {
 	    	Alert.alert('Upload', '' + err + '(' + url + ')');
 			console.log(err);
 		});
 	  }
 	  
-	  setFrames(frames) {
-		  this.setState({frames: frames});
-	  }
-	  
 	  clear() {
 		  console.log('>> clear()');
-		  this.setState({photo: undefined, frames: []});
+		  this.setState({photo: undefined, frames: [], spinner: false});
 	  }
 	  
 	  uploadPicture(path, url) {
