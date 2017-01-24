@@ -21,8 +21,8 @@ class CameraComponent extends Component {
 	            this.camera = cam;
 	          }}
 	          style={styles.camera}
-	          aspect={Camera.constants.Aspect.fill}>
-	        </Camera>
+	          aspect={Camera.constants.Aspect.fill}
+              captureQuality={"480p"}/>
 	        <TouchableHighlight onPress={this.takePicture.bind(this)}>
 		        <Image source={require('./ic_add_a_photo_white_24dp.png')} style={styles.ibutton} />
 	        </TouchableHighlight>
@@ -157,7 +157,7 @@ class ProductDetector extends Component {
 	  setPhoto(photo) {
 		  this.setState({photo: photo});
 		  
-		  var url = 'http://podol.videogorillas.com:4242/upload';
+		  var url = "http://podol.videogorillas.com:4242/upload";
 		  
 		  this.uploadPicture(photo, url).then(result => {
 			  return result.json()
