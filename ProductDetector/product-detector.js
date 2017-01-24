@@ -195,6 +195,8 @@ class ProductDetector extends Component {
 			  var frames = this.jsonToFrames(json);
 			  this.setState({frames: frames});
               this.setSpinner(false);
+              if (frames.length == 0)
+                 Alert.alert('No beer or milk detected');
 	      }).catch(err => {
 	    	Alert.alert('Upload', '' + err + '(' + url + ')');
 			console.log(err);
