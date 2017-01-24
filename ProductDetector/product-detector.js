@@ -32,7 +32,7 @@ class CameraComponent extends Component {
 	      </View>
 	    );
 	}
-	
+
 	takePicture() {
 	    this.camera.capture()
 	      .then(data => {
