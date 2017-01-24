@@ -10,6 +10,7 @@ import {
 	  View
 	} from 'react-native';
 
+import Spinner from 'react-native-loading-spinner-overlay';
 import Camera from 'react-native-camera';
 
 class CameraComponent extends Component {
@@ -26,6 +27,7 @@ class CameraComponent extends Component {
 	        <TouchableHighlight onPress={this.takePicture.bind(this)}>
 		        <Image source={require('./ic_add_a_photo_white_24dp.png')} style={styles.ibutton} />
 	        </TouchableHighlight>
+            <Spinner visible={this.props.spinner} />
 	      </View>
 	    );
 	}
@@ -101,6 +103,7 @@ class ProductComponent extends Component {
 	      	  <TouchableHighlight onPress={this.props.clear}>
 	  			<Image source={require('./ic_close_white_24dp.png')} style={styles.ibutton} />
 	          </TouchableHighlight>
+              <Spinner visible={this.props.spinner} />
 	      </View>
 	    )
 	 }
@@ -114,7 +117,7 @@ class ProductComponent extends Component {
 class ProductDetector extends Component {
 	  constructor(props) {
 	    super(props);
-	    this.state = {photo: undefined, frames: []};
+	    this.state = {photo: undefined, frames: [], spinner: false};
 //	    this.state = {
 //	    	photo: 'file:///storage/emulated/0/DCIM/IMG_20161207_232552.jpg',
 //	    	frames: [
@@ -136,7 +139,8 @@ class ProductDetector extends Component {
 //					score: 0.5,
 //					label: 'product B'
 //				}
-//				]
+//				],
+//	    	spinner: false
 //	    };
 	  }
 	
@@ -145,16 +149,25 @@ class ProductDetector extends Component {
 		  if (!photo) 
 			  return React.createElement(CameraComponent, {
 				  setPhoto: this.setPhoto.bind(this),
-				  setFrames: this.setFrames.bind(this)
+				  setFrames: this.setFrames.bind(this),
+                  setSpinner: this.setSpinner.bind(this),
+                  spinner: this.state.spinner
 			  });
 		  else return React.createElement(ProductComponent, {
 			  	  photo: this.state.photo,
 			  	  frames: this.state.frames,
-			  	  clear: this.clear.bind(this)
+			  	  clear: this.clear.bind(this),
+                  setSpinner: this.setSpinner.bind(this),
+                  spinner: this.state.spinner
 			  });
 	  }
+  
+      setSpinner(spinner) {
+         this.setState({spinner: spinner});
+      }
 	  
 	  setPhoto(photo) {
+          this.setSpinner(true);
 		  this.setState({photo: photo});
 		  
 		  var url = "http://podol.videogorillas.com:4242/upload";
@@ -164,9 +177,11 @@ class ProductDetector extends Component {
 		  }).then(json => {
 			  var frames = this.jsonToFrames(json);
 			  this.setFrames(frames);
+              this.setSpinner(false);
 	      }).catch(err => {
 	    	Alert.alert('Upload', '' + err + '(' + url + ')');
 			console.log(err);
+            this.setSpinner(false);
 		});
 	  }
 	  
@@ -176,7 +191,7 @@ class ProductDetector extends Component {
 	  
 	  clear() {
 		  console.log('>> clear()');
-		  this.setState({photo: undefined, frames: []});
+		  this.setState({photo: undefined, frames: [], spinner: false});
 	  }
 	  
 	  uploadPicture(path, url) {
