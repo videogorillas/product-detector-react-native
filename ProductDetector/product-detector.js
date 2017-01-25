@@ -170,6 +170,9 @@ class ProductDetector extends Component {
 		  }).then(json => {
 			  var frames = this.jsonToFrames(json);
 			  this.setFrames(frames);
+              console.log('>> frames received: ' + frames.length);
+              if (frames.length == 0)
+                 Alert.alert('Nothing was detected');
 	      }).catch(err => {
 	    	Alert.alert('Upload', '' + err + '(' + url + ')');
 			console.log(err);
