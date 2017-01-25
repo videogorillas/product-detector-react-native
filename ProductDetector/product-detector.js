@@ -23,6 +23,7 @@ class CameraComponent extends Component {
 	          }}
 	          style={styles.camera}
 	          aspect={Camera.constants.Aspect.fill}
+              captureQuality={"480p"}
               playSoundOnCapture={false}/>
 	        <TouchableHighlight onPress={this.takePicture.bind(this)}>
 		        <Image source={require('./ic_add_a_photo_white_24dp.png')} style={styles.ibutton} />
