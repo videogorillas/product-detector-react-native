@@ -10,6 +10,7 @@ import {
 	  View
 	} from 'react-native';
 
+import Spinner from 'react-native-loading-spinner-overlay';
 import Camera from 'react-native-camera';
 import RandomColor from 'randomcolor';
 
@@ -33,14 +34,16 @@ class CameraComponent extends Component {
 	}
 	
 	takePicture() {
+        console.log('>> takePicture()');
 	    this.camera.capture()
 	      .then(data => {
 	    	  console.log('>> picture taken. data: ' + JSON.stringify(data));
 	    	  this.props.setPhoto(data.path);
 	      }).catch(err => {
 			console.error(err);
+            this.props.setSpinner(false);
 		});
-	  }
+	}
 }
 
 class FramesComponent extends Component {
@@ -121,7 +124,7 @@ class ProductComponent extends Component {
 class ProductDetector extends Component {
 	  constructor(props) {
 	    super(props);
-	    this.state = {photo: undefined, frames: []};
+	    this.state = {photo: undefined, frames: [], spinner: false};
 //	    this.state = {
 //	    	photo: 'file:///storage/emulated/0/DCIM/IMG_20161207_232552.jpg',
 //	    	frames: [
@@ -148,45 +151,54 @@ class ProductDetector extends Component {
 	  }
 	
 	  render() {
-		  var photo = this.state.photo;
-		  if (!photo) 
-			  return React.createElement(CameraComponent, {
-				  setPhoto: this.setPhoto.bind(this),
-				  setFrames: this.setFrames.bind(this)
-			  });
-		  else return React.createElement(ProductComponent, {
-			  	  photo: this.state.photo,
-			  	  frames: this.state.frames,
-			  	  clear: this.clear.bind(this)
-			  });
+          var photo = this.state.photo;
+          let component = null;
+          if (!photo) {
+              console.log('>> opening CameraComponent');
+              component = <CameraComponent setPhoto={this.setPhoto.bind(this)} setSpinner={this.setSpinner.bind(this)}/>;
+          } else {
+              console.log('>> opening ProductComponent');
+              component = <ProductComponent photo={this.state.photo} frames={this.state.frames} clear={this.clear.bind(this)} setSpinner={this.setSpinner.bind(this)} />;
+          }
+
+          return (
+            <View style={{flex: 1}}>
+              {component}
+              <Spinner visible={this.state.spinner} />
+            </View>
+          )
 	  }
+  
+      setSpinner(spinner) {
+          this.setState({spinner: spinner});
+      }
 	  
 	  setPhoto(photo) {
-		  this.setState({photo: photo});
+          console.log('>> setPhoto()');
+		  this.setState({photo: photo, spinner: true});
+//           this.setSpinner(true);
 		  
 		  var url = 'http://podol.videogorillas.com:4242/upload';
-		  
 		  this.uploadPicture(photo, url).then(result => {
 			  return result.json()
 		  }).then(json => {
 			  var frames = this.jsonToFrames(json);
-			  this.setFrames(frames);
+// 			  this.setFrames(frames);
               console.log('>> frames received: ' + frames.length);
               if (frames.length == 0)
                  Alert.alert('Nothing was detected');
+              this.setState({frames: frames, spinner: false});
+//               this.setSpinner(false);
 	      }).catch(err => {
 	    	Alert.alert('Upload', '' + err + '(' + url + ')');
-			console.log(err);
+			console.log('>> setPhoto() error ' + err);
+            this.setSpinner(false);
 		});
-	  }
-	  
-	  setFrames(frames) {
-		  this.setState({frames: frames});
 	  }
 	  
 	  clear() {
 		  console.log('>> clear()');
-		  this.setState({photo: undefined, frames: []});
+		  this.setState({photo: undefined, frames: [], spinner: false});
 	  }
 	  
 	  uploadPicture(path, url) {
