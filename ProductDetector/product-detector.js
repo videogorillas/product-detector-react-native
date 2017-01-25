@@ -105,7 +105,7 @@ class ProductComponent extends Component {
 		      	source={{uri: this.props.photo}}
 		      	style={{ flex: 1, resizeMode: 'contain'}}
 		      	onLayout={this.setCoordinates.bind(this)}>
-		      	<FramesComponent frames={this.props.frames} coordinates={this.state.coordinates}></FramesComponent>
+		      	<FramesComponent frames={this.props.frames} coordinates={this.state.coordinates}/>
 		      	
 		      </Image>
 	      	  <TouchableHighlight onPress={this.props.clear}>
@@ -174,21 +174,18 @@ class ProductDetector extends Component {
       }
 	  
 	  setPhoto(photo) {
-          console.log('>> setPhoto()');
 		  this.setState({photo: photo, spinner: true});
-//           this.setSpinner(true);
 		  
 		  var url = 'http://podol.videogorillas.com:4242/upload';
+          console.log('>> setPhoto() uploading...');
 		  this.uploadPicture(photo, url).then(result => {
 			  return result.json()
 		  }).then(json => {
 			  var frames = this.jsonToFrames(json);
-// 			  this.setFrames(frames);
               console.log('>> frames received: ' + frames.length);
               if (frames.length == 0)
-                 Alert.alert('Nothing was detected');
+                 Alert.alert('Nothing was detected\nProbably, out of focus');
               this.setState({frames: frames, spinner: false});
-//               this.setSpinner(false);
 	      }).catch(err => {
 	    	Alert.alert('Upload', '' + err + '(' + url + ')');
 			console.log('>> setPhoto() error ' + err);
