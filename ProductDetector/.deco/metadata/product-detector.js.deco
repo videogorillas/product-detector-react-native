@@ -1,0 +1,49 @@
+{
+	"liveValues": [
+		{
+			"range": {
+				"from": {
+					"line": 26,
+					"ch": 30
+				},
+				"to": {
+					"line": 26,
+					"ch": 36
+				}
+			},
+			"editWith": "inputField",
+			"type": "string",
+			"name": "CaptureQuality"
+		},
+		{
+			"range": {
+				"from": {
+					"line": 159,
+					"ch": 16
+				},
+				"to": {
+					"line": 159,
+					"ch": 73
+				}
+			},
+			"editWith": "inputField",
+			"type": "string",
+			"name": "Photo"
+		},
+		{
+			"range": {
+				"from": {
+					"line": 219,
+					"ch": 16
+				},
+				"to": {
+					"line": 219,
+					"ch": 60
+				}
+			},
+			"editWith": "inputField",
+			"type": "string",
+			"name": "Url"
+		}
+	]
+}

@@ -10,7 +10,9 @@ import {
 	  View
 	} from 'react-native';
 
+import Spinner from 'react-native-loading-spinner-overlay';
 import Camera from 'react-native-camera';
+import RandomColor from 'randomcolor';
 
 class CameraComponent extends Component {
 	render() {
@@ -21,8 +23,9 @@ class CameraComponent extends Component {
 	            this.camera = cam;
 	          }}
 	          style={styles.camera}
-	          aspect={Camera.constants.Aspect.fill}>
-	        </Camera>
+	          aspect={Camera.constants.Aspect.stretch}
+              captureQuality={"720p"}
+              playSoundOnCapture={false}/>
 	        <TouchableHighlight onPress={this.takePicture.bind(this)}>
 		        <Image source={require('./ic_add_a_photo_white_24dp.png')} style={styles.ibutton} />
 	        </TouchableHighlight>
@@ -31,42 +34,43 @@ class CameraComponent extends Component {
 	}
 	
 	takePicture() {
+        console.log('>> takePicture()');
 	    this.camera.capture()
 	      .then(data => {
 	    	  console.log('>> picture taken. data: ' + JSON.stringify(data));
 	    	  this.props.setPhoto(data.path);
 	      }).catch(err => {
 			console.error(err);
+			Alert.alert('Capturing ', '' + err);
+            this.props.setSpinner(false);
 		});
-	  }
+	}
 }
 
 class FramesComponent extends Component {
 	render() {
-		var {left, top, width, height} = this.props.coordinates;
+        let style = this.props.style;
+        let {width, height} = style;
+        console.log('FramesComponent ' + width + 'x' + height);
 		return (
 	      <View 
-	      	style={{
-      			position: 'absolute',
-      			top: top,
-      		    left: left,
-      		    width: width,
-      		    height: height,}}
+	      	style={style}
 	      >
-		    {this.props.frames.map(frame => {
-		    	var style = {
+		  {this.props.frames.map(frame => {
+                var style = {
 		        		position: 'absolute',
-		        		left: left + width * frame.left,
-		        		top: top + height * frame.top,
-		            	width: left + width * frame.width, 
-		            	height: top + height * frame.height,
+		        		left: width * frame.left,
+		        		top: height * frame.top,
+		            	width: width * frame.width, 
+		            	height: height * frame.height,
 	  	            	borderStyle: 'solid',
 	  	      		  	borderWidth: frame.score * 5,
 	  	      		  	borderRadius: 5,
-	  	      		  	borderColor: 'white',
+	  	      		  	borderColor: this.labelToColor(frame.label),
 	  	      		  	alignItems: 'flex-end',
 	  	      		  	justifyContent: 'flex-end'
 	  	      	};
+                console.log('style  ' + style.left + ' ' + style.top + ' ' + style.width + ' ' + style.height);
 		    	return (
 	        		 <View key={frame.id} style={style}>
 	        		 	<Text style={styles.label}>{frame.label} : {frame.score.toFixed(2)}</Text>
@@ -76,6 +80,11 @@ class FramesComponent extends Component {
 	      </View>
 	    )
 	 }
+
+     labelToColor(label) {
+       let color = RandomColor.randomColor({seed: label, format: 'rgb'});
+       return color;
+     }
 }
 
 class ProductComponent extends Component {
@@ -86,97 +95,155 @@ class ProductComponent extends Component {
 	    };
 	}
 
-	render() {
-	    return (
-	      <View style={{flex: 1, backgroundColor: '#000000', justifyContent: 'space-between', 
-	    	  flexDirection: 'column'}}>
-
-	      	  <Image 
-		      	source={{uri: this.props.photo}}
-		      	style={{ flex: 1, resizeMode: 'contain'}}
-		      	onLayout={this.setCoordinates.bind(this)}>
-		      	<FramesComponent frames={this.props.frames} coordinates={this.state.coordinates}></FramesComponent>
-		      	
-		      </Image>
-	      	  <TouchableHighlight onPress={this.props.clear}>
-	  			<Image source={require('./ic_close_white_24dp.png')} style={styles.ibutton} />
-	          </TouchableHighlight>
-	      </View>
-	    )
-	 }
+    render() {
+      return this._render();
+    }
 	
-	 setCoordinates(event) {
-		var {x, y, width, height} = event.nativeEvent.layout;
-   	  	this.setState({coordinates: {left: x, top: y, width: width, height: height}});
+    _render() {
+       let imageL = 0;
+       let imageT = 0;
+       let imageW = this.props.photoW;
+       let imageH = this.props.photoH;
+       let ar =  imageW/imageH;
+       let screenH = Dimensions.get('window').height;
+       let screenW = Dimensions.get('window').width;
+       
+       if (screenW < imageW) {
+         imageW = screenW;
+         imageH = imageW / ar;
+       }
+       if (screenH < imageH) {
+         imageH = screenH;
+         imageW = ar * imageH;
+       }
+       
+//        // test:
+//        imageW = imageW/2;
+//        imageH = imageH/2;
+//        imageT = 25;
+      
+       if (screenW > imageW) {
+         imageL = (screenW - imageW)/2;
+       }
+       console.log('>> ProductComponent render() ar=' + ar + ' screen ' + 
+                   screenW + 'x' + screenH + ' image ' + imageW + 'x' + imageH);
+
+       let style = {
+          position: 'absolute',
+          left: imageL,
+          top: imageT,
+          width: imageW, 
+          height: imageH};
+      
+       let viewFlexDirection = (screenW > screenH ) ? 'row' : 'column';
+         
+	   let component = 
+	      <View style={{flex: 1, backgroundColor: '#000000', justifyContent: 'space-between', flexDirection: viewFlexDirection}}>
+             <Image 
+                 source={{uri: this.props.photo}}
+                 style={style}/>
+             <FramesComponent frames={this.props.frames} style={style}/>
+             <View style={{flex: 1}}/>
+             <TouchableHighlight onPress={this.props.clear} >
+                 <Image source={require('./ic_close_white_24dp.png')} style={styles.ibutton} />
+             </TouchableHighlight>
+	      </View>
+	    return component;
 	 }
 }
 
 class ProductDetector extends Component {
 	  constructor(props) {
 	    super(props);
-	    this.state = {photo: undefined, frames: []};
-//	    this.state = {
-//	    	photo: 'file:///storage/emulated/0/DCIM/IMG_20161207_232552.jpg',
-//	    	frames: [
-//	    		{
-//	    			id: 0,
-//					top: 0, 
-//					left: 0, 
-//					width: 0.5, 
-//					height: 0.5,
-//					score: 1,
-//					label: 'product A'
-//				},
-//				{
-//					id: 1,
-//					top: 0.25, 
-//					left: 0.25, 
-//					width: 0.5, 
-//					height: 0.5,
-//					score: 0.5,
-//					label: 'product B'
-//				}
-//				]
-//	    };
+	    this.state = {photo: undefined, photoW: 0, photoH: 0, frames: [], spinner: false};
+// 	    this.state = {
+// 	    	photo: 'file:///storage/emulated/0/DCIM/IMG_20170125_190854.jpg',
+// 	    	frames: [
+// 	    		{
+// 	    			id: 0,
+// 					top: 0, 
+// 					left: 0, 
+// 					width: 0.5, 
+// 					height: 0.5,
+// 					score: 1,
+// 					label: 'one'
+// 				},
+// 				{
+// 					id: 1,
+// 					top: 0, 
+// 					left: 0, 
+// 					width: 1, 
+// 					height: 1,
+// 					score: 0.5,
+// 					label: 'another'
+// 				}
+// 				],
+// 	    	spinner: false,
+//             photoW: 480,
+//             photoH: 800
+// 	    };
 	  }
 	
 	  render() {
-		  var photo = this.state.photo;
-		  if (!photo) 
-			  return React.createElement(CameraComponent, {
-				  setPhoto: this.setPhoto.bind(this),
-				  setFrames: this.setFrames.bind(this)
-			  });
-		  else return React.createElement(ProductComponent, {
-			  	  photo: this.state.photo,
-			  	  frames: this.state.frames,
-			  	  clear: this.clear.bind(this)
-			  });
+		var photo = this.state.photo;
+        let component = null;
+        if (!photo) {
+            console.log('>> opening CameraComponent');
+            component = <CameraComponent 
+                          setPhoto={this.setPhoto.bind(this)} 
+                          setSpinner={this.setSpinner.bind(this)}/>;
+        } else {
+            console.log('>> opening ProductComponent');
+            component = <ProductComponent 
+                          photo={this.state.photo} 
+                          photoW={this.state.photoW}
+                          photoH={this.state.photoH}
+                          frames={this.state.frames} 
+                          clear={this.clear.bind(this)} 
+                          setSpinner={this.setSpinner.bind(this)} />;
+        }
+        
+        return (
+          <View style={{flex: 1}}>
+            {component}
+            <Spinner visible={this.state.spinner} />
+          </View>
+        )
 	  }
+  
+      setSpinner(spinner) {
+          this.setState({spinner: spinner});
+      }
 	  
 	  setPhoto(photo) {
-		  this.setState({photo: photo});
-		  
-		  var url = 'http://podol.videogorillas.com:4242/upload';
-		  
+		  this.setState({photo: photo, spinner: true});
+		  const url = 'http://podol.videogorillas.com:4242/upload';
+		  console.log('>> setPhoto() uploading...');
+          
+          Image.getSize(photo, (width, height) => {
+            this.setState({photoW: width, photoH: height});
+            console.log('>> Actual photo size: ' + width + 'x' + height);
+          });
+          
 		  this.uploadPicture(photo, url).then(result => {
 			  return result.json()
 		  }).then(json => {
 			  var frames = this.jsonToFrames(json);
-			  this.setFrames(frames);
+              console.log('>> frames received: ' + frames.length);
+              if (frames.length == 0) {
+                 Alert.alert('Nothing was detected\nProbably, out of focus');
+              }
+              this.setState({frames: frames, spinner: false});
 	      }).catch(err => {
 	    	Alert.alert('Upload', '' + err + '(' + url + ')');
-			console.log(err);
+			console.log('>> setPhoto() error ' + err);
+            this.setSpinner(false);
 		});
-	  }
-	  
-	  setFrames(frames) {
-		  this.setState({frames: frames});
 	  }
 	  
 	  clear() {
 		  console.log('>> clear()');
-		  this.setState({photo: undefined, frames: []});
+		  this.setState({photo: undefined, photoW: 0, photoH: 0, frames: [], spinner: false});
 	  }
 	  
 	  uploadPicture(path, url) {
@@ -250,7 +317,7 @@ const styles = StyleSheet.create({
 	    margin: 15,
 	    bottom: 15,
 	    alignSelf: 'center',
-	  }
+	  },
 });
 
 export {ProductDetector}
