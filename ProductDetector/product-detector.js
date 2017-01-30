@@ -270,7 +270,7 @@ class ProductDetector extends Component {
 		  var frames = [];
 		  for (i = 0; i < json.length; i++) {
 			  var el = json[i]; 
-			  if (el.score > 0.05) {
+			  if (el.score >= 0.20) {
 				  frames.push({
 						id: i,
 						top: el.ymin, 
