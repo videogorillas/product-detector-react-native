@@ -59,8 +59,8 @@ class FramesComponent extends Component {
 		  {this.props.frames.map(frame => {
                 var style = {
 		        		position: 'absolute',
-		        		left: width * frame.left,
-		        		top: height * frame.top,
+		        		left: width * frame.xmin,
+		        		top: height * frame.ymin,
 		            	width: width * frame.width, 
 		            	height: height * frame.height,
 	  	            	borderStyle: 'solid',
@@ -89,14 +89,7 @@ class FramesComponent extends Component {
 }
 
 class ProductComponent extends Component {
-	constructor(props) {
-	    super(props);
-	    this.state = {
-	    	coordinates: {left: 0, top: 0, width: 0, height: 0}
-	    };
-	}
-
-    render() {
+	render() {
       return this._render();
     }
 	
@@ -162,8 +155,8 @@ class ProductDetector extends Component {
 // 	    	frames: [
 // 	    		{
 // 	    			id: 0,
-// 					top: 0, 
-// 					left: 0, 
+// 					ymin: 0, 
+// 					xmin: 0, 
 // 					width: 0.5, 
 // 					height: 0.5,
 // 					score: 1,
@@ -171,8 +164,8 @@ class ProductDetector extends Component {
 // 				},
 // 				{
 // 					id: 1,
-// 					top: 0, 
-// 					left: 0, 
+// 					ymin: 0, 
+// 					xmin: 0, 
 // 					width: 1, 
 // 					height: 1,
 // 					score: 0.5,
@@ -228,21 +221,20 @@ class ProductDetector extends Component {
           
 		  this.uploadPicture(photo, url).then(result => {
 			  return result.json()
-		  }).then(json => {
-			  var frames = this.jsonToFrames(json);
+		  }).then(frames => {
               console.log('>> frames received: ' + frames.length);
-              
+              frames = frames.filter((f) => {return f.score >= 0.2});
+              console.log('>> frames having filtered: ' + frames.length);
+            
               if (frames.length == 0) {
                 Alert.alert('Nothing was detected\nProbably, out of focus');
               } else {
-                frames.forEach((item, i, arr) => {
-                  console.log(i + ': ' + item.label + ' ' + item.score);
-                });
+                frames.forEach((item, i, arr) => {console.log(i + ': ' + item.label + ' ' + item.score);});
                 frames.sort((a, b) => {return a.score - b.score});
+                frames.forEach((item, i, arr) => { item.id = i });
+                
                 console.log('>> Sorted: ---------');
-                frames.forEach((item, i, arr) => {
-                  console.log(i + ': ' + item.label + ' ' + item.score);
-                });
+                frames.forEach((item, i, arr) => {console.log(item.id + ': ' + item.label + ' ' + item.score);});
               }
 
               this.setState({frames: frames, spinner: false});
@@ -276,25 +268,6 @@ class ProductDetector extends Component {
 			  },
 			  body: body
 			});
-	  }
-	  
-	  jsonToFrames(json) {
-		  var frames = [];
-		  for (i = 0; i < json.length; i++) {
-			  var el = json[i]; 
-			  if (el.score >= 0.20) {
-				  frames.push({
-						id: i,
-						top: el.ymin, 
-						left: el.xmin, 
-						width: el.width, 
-						height: el.height, 
-						score: el.score,
-						label: el.label
-					});
-			  }
-		  }
-		  return frames;
 	  }
 }
 
