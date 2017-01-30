@@ -222,21 +222,7 @@ class ProductDetector extends Component {
 		  this.uploadPicture(photo, url).then(result => {
 			  return result.json()
 		  }).then(frames => {
-              console.log('>> frames received: ' + frames.length);
-              frames = frames.filter((f) => {return f.score >= 0.2});
-              console.log('>> frames having filtered: ' + frames.length);
-            
-              if (frames.length == 0) {
-                Alert.alert('Nothing was detected\nProbably, out of focus');
-              } else {
-                frames.forEach((item, i, arr) => {console.log(i + ': ' + item.label + ' ' + item.score);});
-                frames.sort((a, b) => {return a.score - b.score});
-                frames.forEach((item, i, arr) => { item.id = i });
-                
-                console.log('>> Sorted: ---------');
-                frames.forEach((item, i, arr) => {console.log(item.id + ': ' + item.label + ' ' + item.score);});
-              }
-
+              frames = this.doFrames(frames);
               this.setState({frames: frames, spinner: false});
 	      }).catch(err => {
 	    	Alert.alert('Upload', '' + err + '(' + url + ')');
@@ -244,6 +230,34 @@ class ProductDetector extends Component {
             this.setSpinner(false);
 		});
 	  }
+  
+      doFrames(frames) {
+          console.log('>> frames received: ' + frames.length);
+          frames = frames.filter((f) => {return f.score >= 0.2});
+          console.log('>> frames having filtered: ' + frames.length);
+
+          if (frames.length == 0) {
+            Alert.alert('Nothing was detected\nProbably, out of focus');
+          } else {
+            frames.forEach((item, i, arr) => {console.log(i + ': ' + item.label + ' ' + item.score);});
+
+            frames.sort((a, b) => {return a.score - b.score});
+            frames.forEach((item, i, arr) => { item.id = i });
+
+            console.log('>> Sorted: ---------');
+            frames.forEach((item, i, arr) => {console.log(item.id + ': ' + item.label + ' ' + item.score);});
+          }
+          // TODO: test
+//           frames.push({
+//             id: 100,
+//             ymin: 0.25, 
+//             xmin: 0.25, 
+//             width: 0.5, 
+//             height: 0.5,
+//             score: 1,
+//             label: 'another'});
+//           return frames;
+      }
 	  
 	  clear() {
 		  console.log('>> clear()');
@@ -251,23 +265,23 @@ class ProductDetector extends Component {
 	  }
 	  
 	  uploadPicture(path, url) {
-			var file = {
-			    uri: path,
-			    type: 'image/jpeg',
-			    name: 'file.jpg',
-			};
-	
-			var body = new FormData();
-			body.append('file', file);
-			
-			return fetch(url, {
-			  method: 'POST',
-			  headers: {
-			    'Accept': 'application/json',
-			    'Content-Type': 'multipart/form-data',
-			  },
-			  body: body
-			});
+          var file = {
+              uri: path,
+              type: 'image/jpeg',
+              name: 'file.jpg',
+          };
+
+          var body = new FormData();
+          body.append('file', file);
+
+          return fetch(url, {
+            method: 'POST',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'multipart/form-data',
+            },
+            body: body
+          });
 	  }
 }
 
