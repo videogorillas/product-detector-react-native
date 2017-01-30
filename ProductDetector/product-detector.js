@@ -230,9 +230,20 @@ class ProductDetector extends Component {
 		  }).then(json => {
 			  var frames = this.jsonToFrames(json);
               console.log('>> frames received: ' + frames.length);
+              
               if (frames.length == 0) {
-                 Alert.alert('Nothing was detected\nProbably, out of focus');
+                Alert.alert('Nothing was detected\nProbably, out of focus');
+              } else {
+                frames.forEach((item, i, arr) => {
+                  console.log(i + ': ' + item.label + ' ' + item.score);
+                });
+                frames.sort((a, b) => {return a.score - b.score});
+                console.log('>> Sorted: ---------');
+                frames.forEach((item, i, arr) => {
+                  console.log(i + ': ' + item.label + ' ' + item.score);
+                });
               }
+
               this.setState({frames: frames, spinner: false});
 	      }).catch(err => {
 	    	Alert.alert('Upload', '' + err + '(' + url + ')');
