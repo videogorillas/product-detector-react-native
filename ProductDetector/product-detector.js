@@ -82,7 +82,8 @@ class FramesComponent extends Component {
 	 }
 
      labelToColor(label) {
-       let color = RandomColor.randomColor({seed: label, format: 'rgb'});
+//        let color = RandomColor.randomColor({seed: label, format: 'rgb'});
+       let color = greenProducts.indexOf(label) >=0 ? 'green' : 'red';
        return color;
      }
 }
