@@ -256,7 +256,7 @@ class ProductDetector extends Component {
 //             height: 0.5,
 //             score: 1,
 //             label: 'another'});
-//           return frames;
+          return frames;
       }
 	  
 	  clear() {
