@@ -89,23 +89,27 @@ class FramesComponent extends Component {
                 let b = 5;
                 let label;
                 if (this.state.showLabel == frame.id)
-                  label = <Text style={styles.label}>{frame.label} : {frame.score.toFixed(2)}</Text>;
+                  label = <Text style={{color: color, fontSize: 14, position: 'absolute', top: ftop+fheight-30, left: fleft+10, 
+                                        width: 140, height: 20}}>{frame.label} : {frame.score.toFixed(2)}</Text>;
 		    	return (
-	        		 <View key={frame.id} style={style}>
-                       <TouchableHighlight onPress={() => {this.showLabel(frame.id)}} underlayColor={'#00000000'}
-                           style={{position: 'absolute', left: -b, top: -b, width: fwidth+2*b, height: th, borderRadius: 0, backgroundColor: bgcolor}}>
-                         <View/></TouchableHighlight>
-                       <TouchableHighlight onPress={() => {this.showLabel(frame.id)}} underlayColor={'#00000000'}
-                           style={{position: 'absolute', left: -b, top: -b, width: th, height: fheight+2*b, borderRadius: 0, backgroundColor: bgcolor}}>
-                         <View/></TouchableHighlight>
-                       <TouchableHighlight onPress={() => {this.showLabel(frame.id)}} underlayColor={'#00000000'}
-                           style={{position: 'absolute', left: fwidth-th, top: -b, width: th, height: fheight+2*b, borderRadius: 0, backgroundColor: bgcolor}}>
-                         <View/></TouchableHighlight>
-                       <TouchableHighlight onPress={() => {this.showLabel(frame.id)}} underlayColor={'#00000000'}
-                           style={{position: 'absolute', left: -b, top: fheight-th, width: fwidth+2*b, height: th, borderRadius: 0, backgroundColor: bgcolor}}>
-                         <View/></TouchableHighlight>
-	        		   {label}
-	        		 </View>
+	        		<View key={frame.id} style={{position: 'absolute', top: 0, left: 0, width: width, height: height}}>
+                      <View key={frame.id} style={style}>
+                         <TouchableHighlight onPress={() => {this.showLabel(frame.id)}} underlayColor={'#00000000'}
+                             style={{position: 'absolute', left: -b, top: -b, width: fwidth+2*b, height: th, borderRadius: 0, backgroundColor: bgcolor}}>
+                           <View/></TouchableHighlight>
+                         <TouchableHighlight onPress={() => {this.showLabel(frame.id)}} underlayColor={'#00000000'}
+                             style={{position: 'absolute', left: -b, top: -b, width: th, height: fheight+2*b, borderRadius: 0, backgroundColor: bgcolor}}>
+                           <View/></TouchableHighlight>
+                         <TouchableHighlight onPress={() => {this.showLabel(frame.id)}} underlayColor={'#00000000'}
+                             style={{position: 'absolute', left: fwidth-th, top: -b, width: th, height: fheight+2*b, borderRadius: 0, backgroundColor: bgcolor}}>
+                           <View/></TouchableHighlight>
+                         <TouchableHighlight onPress={() => {this.showLabel(frame.id)}} underlayColor={'#00000000'}
+                             style={{position: 'absolute', left: -b, top: fheight-th, width: fwidth+2*b, height: th, borderRadius: 0, backgroundColor: bgcolor}}>
+                           <View/></TouchableHighlight>
+                         
+                       </View>
+                       {label}
+                    </View> 
 		        );
 		      })}
 	      </View>
@@ -261,7 +265,7 @@ class ProductDetector extends Component {
 	    super(props);
 	    this.state = {photo: undefined, photoW: 0, photoH: 0, frames: [], spinner: false, report: false};
 // 	    this.state = {
-//             photo: 'file:///storage/emulated/0/DCIM/IMG_20170131_120749.jpg', photoW: 720, photoH: 1280,
+//             photo: 'file:///storage/emulated/0/DCIM/IMG_20170131_163055.jpg', photoW: 720, photoH: 1280,
 // 	    	frames: [
 // 	    		{id: 0, ymin: 0.00, xmin: 0.00, width: 0.50, height: 0.50, score: 1.0, label: 'one'},
 // 				{id: 1, ymin: 0.00, xmin: 0.00, width: 1.00, height: 1.00, score: 0.5, label: 'another'},
