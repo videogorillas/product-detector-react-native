@@ -26,13 +26,16 @@ class CameraComponent extends Component {
 	          aspect={Camera.constants.Aspect.stretch}
               captureQuality={"720p"}
               playSoundOnCapture={false}/>
-	        <TouchableHighlight onPress={this.takePicture.bind(this)}>
-		        <Image source={require('./ic_add_a_photo_white_24dp.png')} style={styles.ibutton} />
-	        </TouchableHighlight>
+	        <View style={{justifyContent: 'space-around', flexDirection: 'row'}}>
+              <TouchableHighlight onPress={this.takePicture.bind(this)} 
+                    activeOpacity={1} underlayColor={'#d3d3d355'} style={{borderRadius: 48}}>
+		        <Image source={require('./ic_photo_camera_white_24dp.png')} style={styles.ibutton} />
+              </TouchableHighlight>
+            </View>
 	      </View>
 	    );
 	}
-	
+
 	takePicture() {
         console.log('>> takePicture()');
 	    this.camera.capture()
@@ -89,6 +92,11 @@ class FramesComponent extends Component {
 }
 
 class ProductComponent extends Component {
+    constructor(props) {
+	    super(props);
+	    this.state = {report: false};
+    }
+  
 	render() {
       return this._render();
     }
@@ -130,6 +138,17 @@ class ProductComponent extends Component {
           height: imageH};
       
        let viewFlexDirection = (screenW > screenH ) ? 'row' : 'column';
+      
+       let report = null;
+       if (this.props.report) {
+         report = <View style={{position: 'absolute', left: 10, top: 10, width: screenW-30, height: screenH-40,
+                               backgroundColor: '#ffffff77', borderRadius: 5,
+                               justifyContent: 'space-between'}}>
+              <TouchableHighlight onPress={this.props.toggleReport}>
+                <Text style={{alignSelf: 'center'}}>CLOSE REPORT</Text>
+              </TouchableHighlight>
+           </View>;
+       }
          
 	   let component = 
 	      <View style={{flex: 1, backgroundColor: '#000000', justifyContent: 'space-between', flexDirection: viewFlexDirection}}>
@@ -138,9 +157,17 @@ class ProductComponent extends Component {
                  style={style}/>
              <FramesComponent frames={this.props.frames} style={style}/>
              <View style={{flex: 1}}/>
-             <TouchableHighlight onPress={this.props.clear} >
-                 <Image source={require('./ic_close_white_24dp.png')} style={styles.ibutton} />
-             </TouchableHighlight>
+             <View style={{justifyContent: 'space-around', flexDirection: 'row'}}>
+               <TouchableHighlight onPress={this.props.clear} 
+                   activeOpacity={1} underlayColor={'#d3d3d355'} style={{borderRadius: 48}}>
+                   <Image source={require('./ic_close_white_24dp.png')} style={styles.ibutton} />
+               </TouchableHighlight>
+               <TouchableHighlight onPress={this.props.toggleReport}
+                   activeOpacity={1} underlayColor={'#d3d3d355'} style={{borderRadius: 48}}>
+                   <Image source={require('./ic_assignment_white_24dp.png')} style={styles.ibutton} />
+               </TouchableHighlight>
+             </View>
+             {report}
 	      </View>
 	    return component;
 	 }
@@ -149,7 +176,7 @@ class ProductComponent extends Component {
 class ProductDetector extends Component {
 	  constructor(props) {
 	    super(props);
-	    this.state = {photo: undefined, photoW: 0, photoH: 0, frames: [], spinner: false};
+	    this.state = {photo: undefined, photoW: 0, photoH: 0, frames: [], spinner: false, report: false};
 // 	    this.state = {
 // 	    	photo: 'file:///storage/emulated/0/DCIM/IMG_20170125_190854.jpg',
 // 	    	frames: [
@@ -194,7 +221,9 @@ class ProductDetector extends Component {
                           photoH={this.state.photoH}
                           frames={this.state.frames} 
                           clear={this.clear.bind(this)} 
-                          setSpinner={this.setSpinner.bind(this)} />;
+                          setSpinner={this.setSpinner.bind(this)}
+                          toggleReport={this.toggleReport.bind(this)}
+                          report={this.state.report}/>;
         }
         
         return (
@@ -207,6 +236,11 @@ class ProductDetector extends Component {
   
       setSpinner(spinner) {
           this.setState({spinner: spinner});
+      }
+  
+      toggleReport() {
+          let report = this.state.report;
+          this.setState({report: !report});
       }
 	  
 	  setPhoto(photo) {
@@ -290,6 +324,8 @@ const styles = StyleSheet.create({
 	    flex: 1,
 	    backgroundColor: '#000000',
 	    justifyContent:'flex-end',
+        flexDirection: 'column',
+//         justifyContent: 'space-around',
 	  },
 	  camera: {
 		position: 'absolute',
@@ -308,13 +344,15 @@ const styles = StyleSheet.create({
 	    paddingTop: 1, 
 	    paddingBottom: 2,
 	 	borderRadius: 5, 
-	 	backgroundColor: 'white', 
+	 	backgroundColor: 'white',
 	 	color: 'black', 
 	 	fontSize: 12
 	  },
 	  ibutton: {
-	    margin: 15,
-	    bottom: 15,
+	    margin: 20,
+        padding: 10,
+//         backgroundColor: 'gray',
+//         borderRadius: 24,
 	    alignSelf: 'center',
 	  },
 });
