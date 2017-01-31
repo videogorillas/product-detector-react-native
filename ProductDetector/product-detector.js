@@ -52,6 +52,10 @@ class CameraComponent extends Component {
 }
 
 class FramesComponent extends Component {
+    constructor(props) {
+	    super(props);
+        this.state = {showLabel: -1};
+    }
 	render() {
         let style = this.props.style;
         let {width, height} = style;
@@ -61,29 +65,59 @@ class FramesComponent extends Component {
 	      	style={style}
 	      >
 		  {this.props.frames.map(frame => {
-                var style = {
+                let fleft = width * frame.xmin;
+                let ftop = height * frame.ymin;
+                let fwidth = width * frame.width;
+                let fheight = height * frame.height;
+                let color = this.labelToColor(frame.label);
+                let style = {
 		        		position: 'absolute',
-		        		left: width * frame.xmin,
-		        		top: height * frame.ymin,
-		            	width: width * frame.width, 
-		            	height: height * frame.height,
+		        		left: fleft,
+		        		top: ftop,
+		            	width: fwidth, 
+		            	height: fheight,
 	  	            	borderStyle: 'solid',
 	  	      		  	borderWidth: frame.score * 5,
 	  	      		  	borderRadius: 5,
-	  	      		  	borderColor: this.labelToColor(frame.label),
+	  	      		  	borderColor: color,
 	  	      		  	alignItems: 'flex-end',
 	  	      		  	justifyContent: 'flex-end'
 	  	      	};
                 console.log('style  ' + style.left + ' ' + style.top + ' ' + style.width + ' ' + style.height);
+                let bgcolor = '#00000000';
+                let th = 15;
+                let b = 5;
+                let label;
+                if (this.state.showLabel == frame.id)
+                  label = <Text style={styles.label}>{frame.label} : {frame.score.toFixed(2)}</Text>;
 		    	return (
 	        		 <View key={frame.id} style={style}>
-	        		 	<Text style={styles.label}>{frame.label} : {frame.score.toFixed(2)}</Text>
+                       <TouchableHighlight onPress={() => {this.showLabel(frame.id)}} underlayColor={'#00000000'}
+                           style={{position: 'absolute', left: -b, top: -b, width: fwidth+2*b, height: th, borderRadius: 0, backgroundColor: bgcolor}}>
+                         <View/></TouchableHighlight>
+                       <TouchableHighlight onPress={() => {this.showLabel(frame.id)}} underlayColor={'#00000000'}
+                           style={{position: 'absolute', left: -b, top: -b, width: th, height: fheight+2*b, borderRadius: 0, backgroundColor: bgcolor}}>
+                         <View/></TouchableHighlight>
+                       <TouchableHighlight onPress={() => {this.showLabel(frame.id)}} underlayColor={'#00000000'}
+                           style={{position: 'absolute', left: fwidth-th, top: -b, width: th, height: fheight+2*b, borderRadius: 0, backgroundColor: bgcolor}}>
+                         <View/></TouchableHighlight>
+                       <TouchableHighlight onPress={() => {this.showLabel(frame.id)}} underlayColor={'#00000000'}
+                           style={{position: 'absolute', left: -b, top: fheight-th, width: fwidth+2*b, height: th, borderRadius: 0, backgroundColor: bgcolor}}>
+                         <View/></TouchableHighlight>
+	        		   {label}
 	        		 </View>
 		        );
 		      })}
 	      </View>
 	    )
 	 }
+    
+     showLabel(id) {
+       this.setState((prevState, props) => ({
+         showLabel: prevState.showLabel != id ? id : -1
+       }));
+       console.log('>> show label: ' + id);
+     }
 
      labelToColor(label) {
 //        let color = RandomColor.randomColor({seed: label, format: 'rgb'});
@@ -95,14 +129,15 @@ class FramesComponent extends Component {
 class ProductComponent extends Component {
     constructor(props) {
 	    super(props);
-        const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
-        let planogram = this.getPlanogram(props.frames);
-        this.state = {
-          dataSource: ds.cloneWithRows(planogram)
-        };
+//         const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+//         let planogram = this.getPlanogram(props.frames);
+//         this.state = {
+//           dataSource: ds.cloneWithRows(planogram)
+//         };
     }
   
     getPlanogram(frames) {
+//       return [{label: 'A', count: 10}, {label: 'B', count: 5}, {label: 'C', count: 0}];
       let planogram = [];
       greenProducts.forEach((greenProduct, i, arr) => {
         let p = planogram.find(x => x.label === greenProduct);
@@ -117,8 +152,6 @@ class ProductComponent extends Component {
         });
       });
       planogram.sort((a, b) => {return b.count - a.count}); 
-        
-
       return planogram;
     }
   
@@ -156,12 +189,16 @@ class ProductComponent extends Component {
       
        let element;
        if (this.props.report) {
+          const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+          let planogram = this.getPlanogram(this.props.frames);
+          let dataSource = ds.cloneWithRows(planogram);
+         
          element = <View style={{position: 'absolute', left: 25, top: 10, width: screenW-50, height: screenH-20,
                                backgroundColor: '#ffffff99', borderRadius: 5,
                                justifyContent: 'space-between', flexDirection: 'column'}}>            
                <Text style={{padding: 15, fontWeight: 'normal', fontSize: 20, color: 'black', textAlign: 'left'}}>Planogram Report</Text>
                <View style={{flex: 1, paddingTop: 0, paddingBottom: 0}}>
-                 <ListView dataSource={this.state.dataSource} renderRow={this.renderRow}/>
+                 <ListView dataSource={dataSource} renderRow={this.renderRow}/>
                </View>
                <View style={{justifyContent: 'space-around', flexDirection: 'row'}}>
                  <TouchableHighlight onPress={this.props.toggleReport} 
