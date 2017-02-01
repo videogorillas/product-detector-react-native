@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component } from 'react'
 import {
 	  AppRegistry,
 	  Alert,
@@ -9,18 +9,19 @@ import {
 	  TouchableHighlight,
 	  View,
       ListView,
-	} from 'react-native';
+	} from 'react-native'
 
-import Spinner from 'react-native-loading-spinner-overlay';
-import Camera from 'react-native-camera';
-import RandomColor from 'randomcolor';
+import Spinner from 'react-native-loading-spinner-overlay'
+import Camera from 'react-native-camera'
+import RandomColor from 'randomcolor'
 
-import greenProducts from './green-products';
+const greenProducts = require('./green-products.json')
+const styles = require('./styles').styles
 
 class CameraComponent extends Component {
 	render() {
 		  return (
-	      <View style={styles.cameraContainer}>
+	      <View style={{flex: 1, backgroundColor: '#000000', justifyContent:'flex-end', flexDirection: 'column',}}>
 	        <Camera
 	          ref={(cam) => {
 	            this.camera = cam;
@@ -29,16 +30,16 @@ class CameraComponent extends Component {
 	          aspect={Camera.constants.Aspect.stretch}
               captureQuality={"720p"}
               playSoundOnCapture={false}/>
-	        <View style={{justifyContent: 'space-around', flexDirection: 'row'}}>
-              <TouchableHighlight onPress={this.takePicture.bind(this)} 
-                    activeOpacity={1} underlayColor={'#d3d3d355'} style={{borderRadius: 48}}>
+            
+	        <View style={{justifyContent: 'space-around'}}>
+              <TouchableHighlight onPress={this.takePicture.bind(this)} activeOpacity={1} underlayColor={'#d3d3d355'} style={{borderRadius: 48}}>
 		        <Image source={require('./ic_photo_camera_white_24dp.png')} style={styles.ibutton} />
               </TouchableHighlight>
             </View>
 	      </View>
 	    );
 	}
-
+  
 	takePicture() {
         console.log('>> takePicture()');
 	    this.camera.capture()
@@ -91,7 +92,7 @@ class FramesComponent extends Component {
                 let b = 5;
                 let label;
                 if (this.state.showLabel == frame.id)
-                  label = <Text style={{color: color, fontSize: 14, position: 'absolute', top: ftop+fheight-30, left: fleft+10, 
+                  label = <Text style={{color: color, fontSizelength: 14, position: 'absolute', top: ftop+fheight-30, left: fleft+10, 
                                         width: 140, height: 20}}>{frame.label} : {frame.score.toFixed(2)}</Text>;
 		    	return (
 	        		<View key={frame.id} style={{position: 'absolute', top: 0, left: 0, width: width, height: height}}>
@@ -397,43 +398,5 @@ class ProductDetector extends Component {
           });
 	  }
 }
-
-const styles = StyleSheet.create({
-	  cameraContainer: {
-	    flex: 1,
-	    backgroundColor: '#000000',
-	    justifyContent:'flex-end',
-        flexDirection: 'column',
-//         justifyContent: 'space-around',
-	  },
-	  camera: {
-		position: 'absolute',
-	    top: 0,
-	    left: 0,
-	    height: Dimensions.get('window').height,
-	    width: Dimensions.get('window').width
-	  },
-	  label: {
-		flex: 0, 
-		alignSelf: 'center', 
-		textAlign: 'center', 
-		margin: 3, 
-	    paddingLeft: 8, 
-	    paddingRight: 8, 
-	    paddingTop: 1, 
-	    paddingBottom: 2,
-	 	borderRadius: 5, 
-	 	backgroundColor: 'white',
-	 	color: 'black', 
-	 	fontSize: 12
-	  },
-	  ibutton: {
-	    margin: 20,
-        padding: 10,
-//         backgroundColor: 'gray',
-//         borderRadius: 24,
-	    alignSelf: 'center',
-	  },
-});
 
 export {ProductDetector}
