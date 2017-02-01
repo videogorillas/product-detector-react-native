@@ -18,6 +18,20 @@ function addId(frames) {
     return frames;
 }
 
+function intersect(frameA, frameB) {
+    // ymin: 0.00, xmin: 0.00, width: 0.50, height: 0.50
+    if (frameA.label != frameB.label) return null;
+    let xmin = Math.max(frameA.xmin, frameB.xmin);
+    let ymin = Math.max(frameA.ymin, frameB.ymin);
+    let width = Math.min(frameA.xmin + frameA.width, frameB.xmin + frameB.width) - xmin;
+    let height = Math.min(frameA.ymin + frameA.height, frameB.ymin + frameB.height) - ymin;
+    let score = Math.max(frameA.score, frameB.score);
+    if (width > 0 && height > 0)
+      return {label: frameA.label, xmin: xmin, ymin: ymin, width: width, height: height, score: score}
+    else
+      return null;
+}
+
 function process(frames) {
     console.log('\n>> frames received | ' + toString(frames));
   
@@ -33,4 +47,4 @@ function process(frames) {
     return frames;
 }
 
-export default process
+export {process as default, intersect as intersect}
