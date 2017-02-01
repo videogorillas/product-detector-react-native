@@ -24,6 +24,7 @@ class ProductDetector extends Component {
       componentWillMount() {
         // INITIAL TEST ENV:
         var st = require('./_test-state-0.json');
+        st.frames = processFrames(st.frames);
         this.setState((prevState, props) => (st));
       }
 
