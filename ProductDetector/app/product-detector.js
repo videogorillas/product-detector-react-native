@@ -1,14 +1,9 @@
 import React, { Component } from 'react'
 import {
-	  AppRegistry,
 	  Alert,
-	  Dimensions,
 	  StyleSheet,
 	  Text,
-	  Image,
-	  TouchableHighlight,
 	  View,
-      ListView,
 	} from 'react-native'
 
 import Spinner from 'react-native-loading-spinner-overlay'
@@ -21,17 +16,8 @@ import {ProductComponent} from './product-component'
 class ProductDetector extends Component {
 	  constructor(props) {
 	    super(props);
-// 	    this.state = {photo: undefined, photoW: 0, photoH: 0, frames: [], spinner: false, report: false};
-	    this.state = {
-            photo: 'file:///storage/emulated/0/DCIM/IMG_20170131_163055.jpg', photoW: 720, photoH: 1280,
-	    	frames: [
-	    		{id: 0, ymin: 0.00, xmin: 0.00, width: 0.50, height: 0.50, score: 1.0, label: 'one'},
-				{id: 1, ymin: 0.00, xmin: 0.00, width: 1.00, height: 1.00, score: 0.5, label: 'another'},
-                {id: 2, ymin: 0.25, xmin: 0.25, width: 0.25, height: 0.20, score: 0.9, label: 'Miller'},
-                {id: 3, ymin: 0.65, xmin: 0.25, width: 0.55, height: 0.20, score: 0.8, label: 'smetana'},
-				],
-	    	spinner: false, report: false};
-        
+	    this.state = {photo: undefined, photoW: 0, photoH: 0, frames: [], spinner: false, report: false};
+// 	    this.state = require('./_test-state-0.json');
 	  }
 	
 	  render() {

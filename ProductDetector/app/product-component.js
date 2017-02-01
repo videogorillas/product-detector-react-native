@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import {
-	  AppRegistry,
 	  Alert,
 	  Dimensions,
 	  StyleSheet,
