@@ -12,6 +12,7 @@ import {
 
 import {FramesComponent} from './frames-component'
 import {styles} from './styles'
+const greenProducts = require('./green-products.json')
 
 class ProductComponent extends Component {
     constructor(props) {
@@ -21,6 +22,9 @@ class ProductComponent extends Component {
 //         this.state = {
 //           dataSource: ds.cloneWithRows(planogram)
 //         };
+        this.state = {
+          report: false
+        }
     }
   
     getPlanogram(frames) {
@@ -75,7 +79,7 @@ class ProductComponent extends Component {
        let viewFlexDirection = (screenW > screenH ) ? 'row' : 'column';
       
        let element;
-       if (this.props.report) {
+       if (this.state.report) {
           const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
           let planogram = this.getPlanogram(this.props.frames);
           let dataSource = ds.cloneWithRows(planogram);
@@ -88,11 +92,11 @@ class ProductComponent extends Component {
                  <ListView dataSource={dataSource} renderRow={this.renderRow}/>
                </View>
                <View style={{justifyContent: 'space-around', flexDirection: 'row'}}>
-                 <TouchableHighlight onPress={this.props.toggleReport} 
+                 <TouchableHighlight onPress={this.toggleReport.bind(this)} 
                      activeOpacity={1} underlayColor={'#d3d3d355'} style={{borderRadius: 48}}>
                      <Image source={require('./ic_close_white_24dp.png')} style={styles.ibutton} />
                  </TouchableHighlight>
-                 <TouchableHighlight onPress={this.props.sendReport}
+                 <TouchableHighlight onPress={this.sendReport.bind(this)}
                      activeOpacity={1} underlayColor={'#d3d3d355'} style={{borderRadius: 48}}>
                      <Image source={require('./ic_send_white_24dp.png')} style={styles.ibutton} />
                  </TouchableHighlight>
@@ -107,14 +111,13 @@ class ProductComponent extends Component {
                      activeOpacity={1} underlayColor={'#d3d3d355'} style={{borderRadius: 48}}>
                      <Image source={require('./ic_close_white_24dp.png')} style={styles.ibutton} />
                  </TouchableHighlight>
-                 <TouchableHighlight onPress={this.props.toggleReport}
+                 <TouchableHighlight onPress={this.toggleReport.bind(this)}
                      activeOpacity={1} underlayColor={'#d3d3d355'} style={{borderRadius: 48}}>
                      <Image source={require('./ic_assignment_white_24dp.png')} style={styles.ibutton} />
                  </TouchableHighlight>
                </View>
              </View>;
        }
-         
 	   let component = 
 	      <View style={{flex: 1, backgroundColor: '#000000', justifyContent: 'space-between', flexDirection: viewFlexDirection}}>
              <Image 
@@ -124,6 +127,17 @@ class ProductComponent extends Component {
 	      </View>
 	    return component;
 	 }
+  
+     toggleReport() {
+       this.setState((prevState, props) => ({
+         report: !prevState.report
+       }));
+     }
+     
+     sendReport() {
+        Alert.alert('Sent');
+        this.toggleReport();
+     }
   
      renderRow(row) {
        let icon;

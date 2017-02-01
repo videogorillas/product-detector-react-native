@@ -3,6 +3,7 @@ import {
 	  Alert,
 	  StyleSheet,
 	  Text,
+      Image,
 	  View,
 	} from 'react-native'
 
@@ -16,7 +17,7 @@ import {ProductComponent} from './product-component'
 class ProductDetector extends Component {
 	  constructor(props) {
 	    super(props);
-	    this.state = {photo: undefined, photoW: 0, photoH: 0, frames: [], spinner: false, report: false};
+	    this.state = {photo: undefined, photoW: 0, photoH: 0, frames: [], spinner: false};
 // 	    this.state = require('./_test-state-0.json');
 	  }
 	
@@ -35,11 +36,7 @@ class ProductDetector extends Component {
                           photoW={this.state.photoW}
                           photoH={this.state.photoH}
                           frames={this.state.frames}
-                          report={this.state.report}
-                          clear={this.clear.bind(this)} 
-                          setSpinner={this.setSpinner.bind(this)}
-                          toggleReport={this.toggleReport.bind(this)}
-                          sendReport={this.sendReport.bind(this)}
+                          clear={this.clear.bind(this)}
                           />;
         }
         
@@ -53,15 +50,6 @@ class ProductDetector extends Component {
   
       setSpinner(spinner) {
           this.setState({spinner: spinner});
-      }
-  
-      toggleReport() {
-          this.setState({report: !this.state.report});
-      }
-  
-      sendReport() {
-          Alert.alert('Sent');
-          this.toggleReport();
       }
 	  
 	  setPhoto(photo) {
@@ -102,15 +90,6 @@ class ProductDetector extends Component {
             console.log('>> Sorted: ---------');
             frames.forEach((item, i, arr) => {console.log(item.id + ': ' + item.label + ' ' + item.score);});
           }
-          // TODO: test
-//           frames.push({
-//             id: 100,
-//             ymin: 0.25, 
-//             xmin: 0.25, 
-//             width: 0.5, 
-//             height: 0.5,
-//             score: 1,
-//             label: 'another'});
           return frames;
       }
 	  
