@@ -13,14 +13,20 @@ import {styles} from './styles'
 
 import {CameraComponent} from './camera-component'
 import {ProductComponent} from './product-component'
+import processFrames from './frames-utils'
 
 class ProductDetector extends Component {
 	  constructor(props) {
 	    super(props);
 	    this.state = {photo: undefined, photoW: 0, photoH: 0, frames: [], spinner: false};
-// 	    this.state = require('./_test-state-0.json');
 	  }
-	
+
+      componentWillMount() {
+        // INITIAL TEST ENV:
+        var st = require('./_test-state-0.json');
+        this.setState((prevState, props) => (st));
+      }
+
 	  render() {
 		var photo = this.state.photo;
         let component = null;
@@ -39,7 +45,7 @@ class ProductDetector extends Component {
                           clear={this.clear.bind(this)}
                           />;
         }
-        
+
         return (
           <View style={{flex: 1}}>
             {component}
@@ -47,7 +53,7 @@ class ProductDetector extends Component {
           </View>
         )
 	  }
-  
+
       setSpinner(spinner) {
           this.setState({spinner: spinner});
       }
@@ -64,8 +70,12 @@ class ProductDetector extends Component {
           
 		  this.uploadPicture(photo, url).then(result => {
 			  return result.json()
-		  }).then(frames => {
-              frames = this.doFrames(frames);
+		  }).then(json => {
+              let frames = processFrames(json);
+              if (frames.length == 0) {
+                Alert.alert('Nothing was detected\nProbably, out of focus')
+              }
+//                 this.doFrames(frames);
               this.setState({frames: frames, spinner: false});
 	      }).catch(err => {
 	    	Alert.alert('Upload', '' + err + '(' + url + ')');
@@ -73,25 +83,6 @@ class ProductDetector extends Component {
             this.setSpinner(false);
 		});
 	  }
-  
-      doFrames(frames) {
-          console.log('>> frames received: ' + frames.length);
-          frames = frames.filter((f) => {return f.score >= 0.2});
-          console.log('>> frames having filtered: ' + frames.length);
-
-          if (frames.length == 0) {
-            Alert.alert('Nothing was detected\nProbably, out of focus');
-          } else {
-            frames.forEach((item, i, arr) => {console.log(i + ': ' + item.label + ' ' + item.score);});
-
-            frames.sort((a, b) => {return a.score - b.score});
-            frames.forEach((item, i, arr) => { item.id = i });
-
-            console.log('>> Sorted: ---------');
-            frames.forEach((item, i, arr) => {console.log(item.id + ': ' + item.label + ' ' + item.score);});
-          }
-          return frames;
-      }
 	  
 	  clear() {
 		  console.log('>> clear()');
