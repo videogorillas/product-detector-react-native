@@ -1,14 +1,10 @@
 import React, { Component } from 'react'
 import {
-	  AppRegistry,
 	  Alert,
-	  Dimensions,
-	  StyleSheet,
 	  Text,
 	  Image,
 	  TouchableHighlight,
 	  View,
-      ListView,
 	} from 'react-native'
 
 import Camera from 'react-native-camera'
