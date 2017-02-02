@@ -21,12 +21,12 @@ class ProductDetector extends Component {
 	    this.state = {photo: undefined, photoW: 0, photoH: 0, frames: [], spinner: false};
 	  }
 
-      componentWillMount() {
+//       componentWillMount() {
         // INITIAL TEST ENV:
-        var st = require('./_test-state-0.json');
-        st.frames = processFrames(st.frames);
-        this.setState((prevState, props) => (st));
-      }
+//         var st = require('./_test-state-0.json');
+//         st.frames = processFrames(st.frames);
+//         this.setState((prevState, props) => (st));
+//       }
 
 	  render() {
 		var photo = this.state.photo;
