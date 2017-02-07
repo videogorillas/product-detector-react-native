@@ -92,7 +92,6 @@ class ProductDetector extends Component {
               if (frames.length == 0) {
                 Alert.alert('Nothing was detected\nProbably, out of focus')
               }
-//                 this.doFrames(frames);
               this.setState({frames: frames, spinner: false});
 	      }).catch(err => {
 	    	Alert.alert('Upload', '' + err + '(' + url + ')');

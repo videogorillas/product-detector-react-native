@@ -10,6 +10,7 @@ import {
       ListView,
 	} from 'react-native'
 
+import ViewTransformer from 'react-native-view-transformer'
 import {FramesComponent} from './frames-component'
 import {styles} from './styles'
 const greenProducts = require('./green-products.json')
@@ -17,18 +18,13 @@ const greenProducts = require('./green-products.json')
 class ProductComponent extends Component {
     constructor(props) {
 	    super(props);
-//         const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
-//         let planogram = this.getPlanogram(props.frames);
-//         this.state = {
-//           dataSource: ds.cloneWithRows(planogram)
-//         };
         this.state = {
-          report: false
+          report: false,
+          transformation: {scale: 1, translateX: 0, translateY: 0}
         }
     }
   
     getPlanogram(frames) {
-//       return [{label: 'A', count: 10}, {label: 'B', count: 5}, {label: 'C', count: 0}];
       let planogram = [];
       greenProducts.forEach((greenProduct, i, arr) => {
         let p = planogram.find(x => x.label === greenProduct);
@@ -81,14 +77,16 @@ class ProductComponent extends Component {
        let viewFlexDirection = this.props.layout.landscape ? 'row' : 'column';
        let buttonsFlexDirection = this.props.layout.landscape ? 'column' : 'row';
       
-       let element;
+       let controlButtons = null;
+       let frames = null;
+       let report = null;
+      
        if (this.state.report) {
-          // Report
-          const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
-          let planogram = this.getPlanogram(this.props.frames);
-          let dataSource = ds.cloneWithRows(planogram);
+         const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+         let planogram = this.getPlanogram(this.props.frames);
+         let dataSource = ds.cloneWithRows(planogram);
          
-         element = <View style={{position: 'absolute', left: 10, top: 10, width: screenW-20, height: screenH-20,
+         report = <View style={{position: 'absolute', left: 10, top: 10, width: screenW-20, height: screenH-20,
                                backgroundColor: '#ffffff99', borderRadius: 5,
                                justifyContent: 'space-between', flexDirection: 'column'}}>            
                <Text style={{padding: 15, fontWeight: 'normal', fontSize: 20, color: 'black', textAlign: 'left'}}>Planogram Report</Text>
@@ -105,34 +103,42 @@ class ProductComponent extends Component {
                      <Image source={require('./ic_send_white_24dp.png')} style={styles.ibutton} />
                  </TouchableHighlight>
                </View>
-           </View>;
+           </View>
        } else {
-         // Frames
-         element = <View style={{flex: 1, justifyContent: 'space-between', flexDirection: viewFlexDirection}}>
-               <FramesComponent frames={this.props.frames} style={style}/>
+         controlButtons = 
+            <View style={{justifyContent: 'space-around', flexDirection: buttonsFlexDirection}}>
+               <TouchableHighlight onPress={this.props.clear} 
+                   activeOpacity={1} underlayColor={'#d3d3d355'} style={{borderRadius: 48}}>
+                   <Image source={require('./ic_close_white_24dp.png')} style={styles.ibutton} />
+               </TouchableHighlight>
+               <TouchableHighlight onPress={this.toggleReport.bind(this)}
+                   activeOpacity={1} underlayColor={'#d3d3d355'} style={{borderRadius: 48}}>
+                   <Image source={require('./ic_assignment_white_24dp.png')} style={styles.ibutton} />
+               </TouchableHighlight>
+            </View>
+           
+         frames = 
+           <View style={{flex: 1, justifyContent: 'space-between', flexDirection: viewFlexDirection}}>
+               <FramesComponent frames={this.props.frames} style={style} transformation={this.state.transformation}/>
                <View style={{flex: 1}}/>
-               <View style={{justifyContent: 'space-around', flexDirection: buttonsFlexDirection}}>
-                 <TouchableHighlight onPress={this.props.clear} 
-                     activeOpacity={1} underlayColor={'#d3d3d355'} style={{borderRadius: 48}}>
-                     <Image source={require('./ic_close_white_24dp.png')} style={styles.ibutton} />
-                 </TouchableHighlight>
-                 <TouchableHighlight onPress={this.toggleReport.bind(this)}
-                     activeOpacity={1} underlayColor={'#d3d3d355'} style={{borderRadius: 48}}>
-                     <Image source={require('./ic_assignment_white_24dp.png')} style={styles.ibutton} />
-                 </TouchableHighlight>
-               </View>
-             </View>;
+           </View>
        }
+       
 	   let component = 
-	      <View style={{flex: 1, backgroundColor: '#000000', justifyContent: 'space-between', flexDirection: viewFlexDirection}}>
-             <Image 
-                 source={{uri: this.props.photo}}
-                 style={style}/>
-             {element}
-	      </View>
+          <View style={{flex: 1, backgroundColor: '#000000', justifyContent: 'flex-end', flexDirection: viewFlexDirection}}>
+            <ViewTransformer style={{position: 'absolute', left: 0, top: 0, width: screenW, height: screenH}}
+                maxScale={3}>
+               <Image 
+                   source={{uri: this.props.photo}}
+                   style={style}/>
+               {frames}
+            </ViewTransformer>
+            {report}
+            {controlButtons}
+          </View>
 	    return component;
 	 }
-  
+
      toggleReport() {
        this.setState((prevState, props) => ({
          report: !prevState.report
