@@ -55,7 +55,7 @@ class FramesComponent extends Component {
                 let b = 5;
                 let label;
                 if (this.state.showLabel == frame.id)
-                  label = <Text style={{color: color, fontSizelength: 14, position: 'absolute', top: ftop+fheight-30, left: fleft+10, 
+                  label = <Text style={{color: color, fontSize: 14, position: 'absolute', top: ftop+fheight-30, left: fleft+10, 
                                         width: 140, height: 20}}>{frame.label} : {frame.score.toFixed(2)}</Text>;
 		    	return (
 	        		<View key={frame.id} style={{position: 'absolute', top: 0, left: 0, width: width, height: height}}>
