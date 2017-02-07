@@ -68,9 +68,11 @@ class ProductComponent extends Component {
          imageH = screenH;
          imageW = ar * imageH;
        }
-       // center horizontally:
-       if (screenW > imageW) {
-         imageL = (screenW - imageW)/2;
+       // if portrait, center (top) horizontally, else (left) vertically:
+       if (this.props.layout.portrait && (screenW > imageW)) {
+         imageL = (screenW - imageW) / 2;
+       } else if (this.props.layout.landscape && (screenH > imageH)) {
+         imageT = (screenH - imageH) / 2;
        }
        console.log('>> ProductComponent render() ar=' + ar + ' screen ' + screenW + 'x' + screenH + ' image ' + imageW + 'x' + imageH);
 
@@ -86,7 +88,7 @@ class ProductComponent extends Component {
           let planogram = this.getPlanogram(this.props.frames);
           let dataSource = ds.cloneWithRows(planogram);
          
-         element = <View style={{position: 'absolute', left: 25, top: 10, width: screenW-50, height: screenH-20,
+         element = <View style={{position: 'absolute', left: 10, top: 10, width: screenW-20, height: screenH-20,
                                backgroundColor: '#ffffff99', borderRadius: 5,
                                justifyContent: 'space-between', flexDirection: 'column'}}>            
                <Text style={{padding: 15, fontWeight: 'normal', fontSize: 20, color: 'black', textAlign: 'left'}}>Planogram Report</Text>
@@ -105,7 +107,7 @@ class ProductComponent extends Component {
                </View>
            </View>;
        } else {
-         // Fr
+         // Frames
          element = <View style={{flex: 1, justifyContent: 'space-between', flexDirection: viewFlexDirection}}>
                <FramesComponent frames={this.props.frames} style={style}/>
                <View style={{flex: 1}}/>

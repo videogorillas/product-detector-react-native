@@ -27,7 +27,7 @@ class CameraComponent extends Component {
                 width: this.props.layout.width
               }}
 	          aspect={Camera.constants.Aspect.fit}
-              captureQuality={"720p"}
+              captureQuality={"high"}
               playSoundOnCapture={false}
               orientation={"auto"}/>
             
