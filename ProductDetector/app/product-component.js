@@ -56,8 +56,8 @@ class ProductComponent extends Component {
        let imageW = this.props.photoW;
        let imageH = this.props.photoH;
        let ar =  imageW/imageH;
-       let screenH = Dimensions.get('window').height;
-       let screenW = Dimensions.get('window').width;
+       let screenH = this.props.layout.height;
+       let screenW = this.props.layout.width;
        
        // fit:
        if (screenW < imageW) {
@@ -76,10 +76,12 @@ class ProductComponent extends Component {
 
        let style = { position: 'absolute', left: imageL, top: imageT, width: imageW, height: imageH};
       
-       let viewFlexDirection = (screenW > screenH ) ? 'row' : 'column';
+       let viewFlexDirection = this.props.layout.landscape ? 'row' : 'column';
+       let buttonsFlexDirection = this.props.layout.landscape ? 'column' : 'row';
       
        let element;
        if (this.state.report) {
+          // Report
           const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
           let planogram = this.getPlanogram(this.props.frames);
           let dataSource = ds.cloneWithRows(planogram);
@@ -103,10 +105,11 @@ class ProductComponent extends Component {
                </View>
            </View>;
        } else {
+         // Fr
          element = <View style={{flex: 1, justifyContent: 'space-between', flexDirection: viewFlexDirection}}>
                <FramesComponent frames={this.props.frames} style={style}/>
                <View style={{flex: 1}}/>
-               <View style={{justifyContent: 'space-around', flexDirection: 'row'}}>
+               <View style={{justifyContent: 'space-around', flexDirection: buttonsFlexDirection}}>
                  <TouchableHighlight onPress={this.props.clear} 
                      activeOpacity={1} underlayColor={'#d3d3d355'} style={{borderRadius: 48}}>
                      <Image source={require('./ic_close_white_24dp.png')} style={styles.ibutton} />

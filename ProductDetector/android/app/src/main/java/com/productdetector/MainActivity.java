@@ -1,6 +1,9 @@
 package com.productdetector;
 
 import com.facebook.react.ReactActivity;
+import android.os.Bundle;
+import android.view.Window;
+import android.view.WindowManager;
 
 public class MainActivity extends ReactActivity {
 
@@ -11,5 +14,12 @@ public class MainActivity extends ReactActivity {
     @Override
     protected String getMainComponentName() {
         return "ProductDetector";
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
     }
 }
